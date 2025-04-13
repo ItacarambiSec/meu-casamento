@@ -107,10 +107,20 @@ body > *:not(.filtro) {
   </div>
 
   <!-- Música de fundo -->
-<audio autoplay loop>
+<audio id="bgm" autoplay loop muted>
   <source src="praia_do_rosa.mp3" type="audio/mpeg">
   Seu navegador não suporta áudio HTML5.
 </audio>
+
+<script>
+  window.addEventListener('load', () => {
+    const audio = document.getElementById('bgm');
+    audio.muted = false;
+    audio.play().catch(e => {
+      console.log('Autoplay falhou:', e);
+    });
+  });
+</script>
 
   <script>
     const countdown = () => {
