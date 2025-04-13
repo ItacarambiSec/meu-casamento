@@ -63,6 +63,20 @@
     audio {
       display: none;
     }
+    .filtro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3); /* ou rgba(0,0,0,0.4) se quiser escurecer */
+  z-index: 0;
+}
+
+body > *:not(.filtro) {
+  position: relative;
+  z-index: 1;
+}
 
   </style>
 </head>
