@@ -117,37 +117,24 @@
 
     <script>
         const weddingDate = new Date("2025-12-04T00:00:00").getTime();
-        const relationshipStartDate = new Date("2024-04-13T00:00:00").getTime();
+        const relationshipStartDate = new Date("2024-04-13T00:00:00");
+        const photoDir = 'fotos/';
 
-        const getPhotosFromFolder = async () => {
-            const res = await fetch('fotos/');
-            const html = await res.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const links = doc.querySelectorAll('a');
-            
-            const photos = [];
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href.match(/\.(jpeg|jpg|gif|png)$/i)) {
-                    photos.push(href);
-                }
-            });
-            return photos;
-        };
+        // ATENÇÃO: Adicione o nome de todas as suas fotos nesta lista!
+        // Exemplo: const photos = ['foto1.jpg', 'foto2.png', 'minha_foto.jpeg'];
+        const photos = ['20241027_195616 (2).jpg'];
 
-        const setDailyBackground = async () => {
-            const photos = await getPhotosFromFolder();
+        const setDailyBackground = () => {
             if (photos.length === 0) {
-                console.error("Nenhuma foto encontrada na pasta 'fotos'.");
+                console.error("A lista de fotos está vazia. Adicione os nomes dos arquivos ao array 'photos'.");
                 return;
             }
 
             const now = new Date();
             const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const dayIndex = Math.floor((startOfDay - relationshipStartDate) / (1000 * 60 * 60 * 24)) % photos.length;
+            const dayIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % photos.length;
             const photo = photos[dayIndex];
-            document.body.style.backgroundImage = `url('fotos/${photo}')`;
+            document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
         };
 
         const updateCountdown = () => {
@@ -171,11 +158,36 @@
         };
 
         const updateRelationshipTime = () => {
-            const now = new Date().getTime();
-            const timeTogether = now - relationshipStartDate;
-            const daysTogether = Math.floor(timeTogether / (1000 * 60 * 60 * 24));
+            const now = new Date();
+            const years = now.getFullYear() - relationshipStartDate.getFullYear();
+            const months = now.getMonth() - relationshipStartDate.getMonth();
+            const days = now.getDate() - relationshipStartDate.getDate();
+
+            let totalYears = years;
+            let totalMonths = months;
+            let totalDays = days;
             
-            document.getElementById("relationship-time").innerText = `Juntos há ${daysTogether} dias 💖`;
+            // Ajuste para meses e anos
+            if (totalDays < 0) {
+                totalMonths--;
+                totalDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            }
+            if (totalMonths < 0) {
+                totalYears--;
+                totalMonths += 12;
+            }
+
+            // Cria as strings para anos, meses e dias
+            let timeString = 'Juntos há ';
+            if (totalYears > 0) {
+                timeString += `${totalYears} ano${totalYears > 1 ? 's' : ''}, `;
+            }
+            if (totalMonths > 0) {
+                timeString += `${totalMonths} mes${totalMonths > 1 ? 'es' : ''}, `;
+            }
+            timeString += `${totalDays} dia${totalDays > 1 ? 's' : ''} 💖`;
+            
+            document.getElementById("relationship-time").innerText = timeString;
         };
 
         setDailyBackground();
