@@ -77,9 +77,8 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            /* Aumentado o tamanho da fonte do rodapé */
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8); /* Aumentada a opacidade */
+            color: rgba(255, 255, 255, 0.8);
             font-style: italic;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
@@ -87,7 +86,7 @@
 </head>
 <body>
     <h1>Contagem Regressiva para o Nosso Casamento 💍</h1>
-    <div class="romantic">Em breve, uma só carne...</div>
+    <div class="romantic" id="daily-phrase">Em breve, uma só carne...</div>
 
     <div class="countdown" id="countdown">
         <div class="time-box">
@@ -117,11 +116,17 @@
 
     <script type="module">
         import { photos } from './photos.js';
+        // Importa a nova lista de frases do arquivo 'phrases.js'
+        import { phrases } from './phrases.js';
 
         const weddingDate = new Date("2025-12-04T00:00:00").getTime();
         const relationshipStartDate = new Date("2024-04-13T00:00:00");
         const photoDir = 'fotos/';
+        
+        // Novo elemento para o texto romântico
+        const dailyPhraseElement = document.getElementById("daily-phrase");
 
+        // Função que define a foto de fundo do dia
         const setDailyBackground = () => {
             if (!photos || photos.length === 0) {
                 console.error("A lista de fotos não foi carregada. Verifique o arquivo 'photos.js'.");
@@ -132,6 +137,21 @@
             const dayIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % photos.length;
             const photo = photos[dayIndex];
             document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
+        };
+        
+        // Nova função para mudar a frase
+        const setDailyPhrase = () => {
+            if (!phrases || phrases.length === 0) {
+                console.error("A lista de frases está vazia. Verifique o arquivo 'phrases.js'.");
+                return;
+            }
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            // A mesma lógica de cálculo é usada para selecionar a frase
+            const phraseIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % phrases.length;
+            const phrase = phrases[phraseIndex];
+            // Atualiza o texto da div romântica
+            dailyPhraseElement.innerText = phrase;
         };
 
         const updateCountdown = () => {
@@ -169,7 +189,6 @@
                 months += 12;
             }
 
-            // Lógica para formatar o texto usando 'e' no lugar da última vírgula
             const parts = [];
             if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
             if (months > 0) parts.push(`${months} mes${months > 1 ? 'es' : ''}`);
@@ -178,17 +197,19 @@
             let timeString = 'Juntos há ';
             if (parts.length > 1) {
                 const lastPart = parts.pop();
-                timeString += parts.join(', ') + ', ' + lastPart + ' 💖';
+                timeString += parts.join(', ') + ' e ' + lastPart + ' 💖';
             } else if (parts.length === 1) {
                 timeString += parts[0] + ' 💖';
             } else {
-                timeString += 'pouco tempo... 💖'; // Caso ainda não tenha passado 1 dia
+                timeString += 'pouco tempo... 💖';
             }
             
             document.getElementById("relationship-time").innerText = timeString;
         };
 
+        // Chama as funções para carregar os valores iniciais
         setDailyBackground();
+        setDailyPhrase(); // Nova chamada para a função de frases
         updateCountdown();
         updateRelationshipTime();
         
