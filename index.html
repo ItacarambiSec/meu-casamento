@@ -77,8 +77,9 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            /* Aumentado o tamanho da fonte do rodapé */
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8); /* Aumentada a opacidade */
             font-style: italic;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
@@ -115,18 +116,12 @@
     </audio>
 
     <script type="module">
-        // Importa a lista de fotos do arquivo externo 'photos.js'.
-        // Isso mantém o código principal limpo e facilita a manutenção da lista de fotos.
         import { photos } from './photos.js';
 
-        // Constantes com as datas importantes.
         const weddingDate = new Date("2025-12-04T00:00:00").getTime();
         const relationshipStartDate = new Date("2024-04-13T00:00:00");
         const photoDir = 'fotos/';
 
-        // Função que define a foto de fundo do dia.
-        // Ela calcula o número de dias desde o início do namoro e usa
-        // esse número para selecionar uma foto da lista, ciclando entre elas.
         const setDailyBackground = () => {
             if (!photos || photos.length === 0) {
                 console.error("A lista de fotos não foi carregada. Verifique o arquivo 'photos.js'.");
@@ -139,9 +134,6 @@
             document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
         };
 
-        // Função que atualiza a contagem regressiva a cada segundo.
-        // Ela calcula a diferença entre a data atual e a do casamento
-        // e atualiza os elementos de dias, horas, minutos e segundos.
         const updateCountdown = () => {
             const now = new Date().getTime();
             const distance = weddingDate - now;
@@ -162,46 +154,44 @@
             document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
         };
 
-        // Função que atualiza o tempo de namoro no rodapé.
-        // Ela calcula os anos, meses e dias exatos desde a data de
-        // início do namoro e formata o texto para exibição.
         const updateRelationshipTime = () => {
             const now = new Date();
-            const years = now.getFullYear() - relationshipStartDate.getFullYear();
-            const months = now.getMonth() - relationshipStartDate.getMonth();
-            const days = now.getDate() - relationshipStartDate.getDate();
+            let years = now.getFullYear() - relationshipStartDate.getFullYear();
+            let months = now.getMonth() - relationshipStartDate.getMonth();
+            let days = now.getDate() - relationshipStartDate.getDate();
 
-            let totalYears = years;
-            let totalMonths = months;
-            let totalDays = days;
-            
-            if (totalDays < 0) {
-                totalMonths--;
-                totalDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            if (days < 0) {
+                months--;
+                days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
             }
-            if (totalMonths < 0) {
-                totalYears--;
-                totalMonths += 12;
+            if (months < 0) {
+                years--;
+                months += 12;
             }
+
+            // Lógica para formatar o texto usando 'e' no lugar da última vírgula
+            const parts = [];
+            if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
+            if (months > 0) parts.push(`${months} mes${months > 1 ? 'es' : ''}`);
+            if (days > 0 || (years === 0 && months === 0)) parts.push(`${days} dia${days > 1 ? 's' : ''}`);
 
             let timeString = 'Juntos há ';
-            const parts = [];
-            if (totalYears > 0) parts.push(`${totalYears} ano${totalYears > 1 ? 's' : ''}`);
-            if (totalMonths > 0) parts.push(`${totalMonths} mes${totalMonths > 1 ? 'es' : ''}`);
-            if (totalDays > 0 || (totalYears === 0 && totalMonths === 0)) parts.push(`${totalDays} dia${totalDays > 1 ? 's' : ''}`);
-
-            timeString += parts.join(', ');
-            timeString += ' 💖';
+            if (parts.length > 1) {
+                const lastPart = parts.pop();
+                timeString += parts.join(', ') + ' e ' + lastPart + ' 💖';
+            } else if (parts.length === 1) {
+                timeString += parts[0] + ' 💖';
+            } else {
+                timeString += 'pouco tempo... 💖'; // Caso ainda não tenha passado 1 dia
+            }
             
             document.getElementById("relationship-time").innerText = timeString;
         };
 
-        // Executa as funções uma vez para carregar os valores iniciais.
         setDailyBackground();
         updateCountdown();
         updateRelationshipTime();
         
-        // Define um loop para executar as funções de atualização a cada segundo.
         setInterval(() => {
             updateCountdown();
             updateRelationshipTime();
