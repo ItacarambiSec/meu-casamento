@@ -120,32 +120,13 @@
         const relationshipStartDate = new Date("2024-04-13T00:00:00");
         const photoDir = 'fotos/';
 
-        const getPhotosFromFolder = async () => {
-            try {
-                const response = await fetch(photoDir);
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                const links = doc.querySelectorAll('a');
-                
-                const photos = [];
-                links.forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (href && (href.endsWith('.jpg') || href.endsWith('.jpeg') || href.endsWith('.png') || href.endsWith('.gif'))) {
-                        photos.push(href);
-                    }
-                });
-                return photos;
-            } catch (error) {
-                console.error("Erro ao buscar a lista de fotos. Verifique se a pasta 'fotos' existe e se o servidor web está configurado para listar arquivos.", error);
-                return [];
-            }
-        };
+        // ATENÇÃO: Adicione o nome de todas as suas fotos nesta lista!
+        // Exemplo: const photos = ['foto1.jpg', 'foto2.png', 'minha_foto.jpeg'];
+        const photos = ['20241027_195616 (2).jpg'];
 
-        const setDailyBackground = async () => {
-            const photos = await getPhotosFromFolder();
+        const setDailyBackground = () => {
             if (photos.length === 0) {
-                console.error("Nenhuma foto encontrada na pasta 'fotos'.");
+                console.error("A lista de fotos está vazia. Adicione os nomes dos arquivos ao array 'photos'.");
                 return;
             }
 
@@ -186,6 +167,7 @@
             let totalMonths = months;
             let totalDays = days;
             
+            // Ajuste para meses e anos
             if (totalDays < 0) {
                 totalMonths--;
                 totalDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
@@ -195,14 +177,15 @@
                 totalMonths += 12;
             }
 
+            // Cria as strings para anos, meses e dias
             let timeString = 'Juntos há ';
-            const parts = [];
-            if (totalYears > 0) parts.push(`${totalYears} ano${totalYears > 1 ? 's' : ''}`);
-            if (totalMonths > 0) parts.push(`${totalMonths} mes${totalMonths > 1 ? 'es' : ''}`);
-            if (totalDays > 0 || (totalYears === 0 && totalMonths === 0)) parts.push(`${totalDays} dia${totalDays > 1 ? 's' : ''}`);
-
-            timeString += parts.join(', ');
-            timeString += ' 💖';
+            if (totalYears > 0) {
+                timeString += `${totalYears} ano${totalYears > 1 ? 's' : ''}, `;
+            }
+            if (totalMonths > 0) {
+                timeString += `${totalMonths} mes${totalMonths > 1 ? 'es' : ''}, `;
+            }
+            timeString += `${totalDays} dia${totalDays > 1 ? 's' : ''} 💖`;
             
             document.getElementById("relationship-time").innerText = timeString;
         };
