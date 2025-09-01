@@ -84,7 +84,6 @@
         }
     </style>
 </head>
-
 <body>
     <h1>Contagem Regressiva para o Nosso Casamento 💍</h1>
     <div class="romantic">Em breve, uma só carne...</div>
@@ -115,21 +114,24 @@
         Seu navegador não suporta áudio HTML5.
     </audio>
 
-    <script>
+    <script type="module">
+        // Importa a lista de fotos do arquivo externo 'photos.js'.
+        // Isso mantém o código principal limpo e facilita a manutenção da lista de fotos.
+        import { photos } from './photos.js';
+
+        // Constantes com as datas importantes.
         const weddingDate = new Date("2025-12-04T00:00:00").getTime();
         const relationshipStartDate = new Date("2024-04-13T00:00:00");
         const photoDir = 'fotos/';
 
-        // ATENÇÃO: Adicione o nome de todas as suas fotos nesta lista!
-        // Exemplo: const photos = ['foto1.jpg', 'foto2.png', 'minha_foto.jpeg'];
-        const photos = ['20241027_195616 (2).jpg'];
-
+        // Função que define a foto de fundo do dia.
+        // Ela calcula o número de dias desde o início do namoro e usa
+        // esse número para selecionar uma foto da lista, ciclando entre elas.
         const setDailyBackground = () => {
-            if (photos.length === 0) {
-                console.error("A lista de fotos está vazia. Adicione os nomes dos arquivos ao array 'photos'.");
+            if (!photos || photos.length === 0) {
+                console.error("A lista de fotos não foi carregada. Verifique o arquivo 'photos.js'.");
                 return;
             }
-
             const now = new Date();
             const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             const dayIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % photos.length;
@@ -137,6 +139,9 @@
             document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
         };
 
+        // Função que atualiza a contagem regressiva a cada segundo.
+        // Ela calcula a diferença entre a data atual e a do casamento
+        // e atualiza os elementos de dias, horas, minutos e segundos.
         const updateCountdown = () => {
             const now = new Date().getTime();
             const distance = weddingDate - now;
@@ -157,6 +162,9 @@
             document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
         };
 
+        // Função que atualiza o tempo de namoro no rodapé.
+        // Ela calcula os anos, meses e dias exatos desde a data de
+        // início do namoro e formata o texto para exibição.
         const updateRelationshipTime = () => {
             const now = new Date();
             const years = now.getFullYear() - relationshipStartDate.getFullYear();
@@ -167,7 +175,6 @@
             let totalMonths = months;
             let totalDays = days;
             
-            // Ajuste para meses e anos
             if (totalDays < 0) {
                 totalMonths--;
                 totalDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
@@ -177,22 +184,24 @@
                 totalMonths += 12;
             }
 
-            // Cria as strings para anos, meses e dias
             let timeString = 'Juntos há ';
-            if (totalYears > 0) {
-                timeString += `${totalYears} ano${totalYears > 1 ? 's' : ''}, `;
-            }
-            if (totalMonths > 0) {
-                timeString += `${totalMonths} mes${totalMonths > 1 ? 'es' : ''}, `;
-            }
-            timeString += `${totalDays} dia${totalDays > 1 ? 's' : ''} 💖`;
+            const parts = [];
+            if (totalYears > 0) parts.push(`${totalYears} ano${totalYears > 1 ? 's' : ''}`);
+            if (totalMonths > 0) parts.push(`${totalMonths} mes${totalMonths > 1 ? 'es' : ''}`);
+            if (totalDays > 0 || (totalYears === 0 && totalMonths === 0)) parts.push(`${totalDays} dia${totalDays > 1 ? 's' : ''}`);
+
+            timeString += parts.join(', ');
+            timeString += ' 💖';
             
             document.getElementById("relationship-time").innerText = timeString;
         };
 
+        // Executa as funções uma vez para carregar os valores iniciais.
         setDailyBackground();
         updateCountdown();
         updateRelationshipTime();
+        
+        // Define um loop para executar as funções de atualização a cada segundo.
         setInterval(() => {
             updateCountdown();
             updateRelationshipTime();
