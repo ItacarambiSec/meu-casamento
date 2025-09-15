@@ -1,222 +1,272 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Contagem Regressiva para o Casamento</title>
-    <style>
-        body {
-            background: no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            height: 100vh;
-            margin: 0;
-            padding: 0 20px;
-            color: #fff7f0;
-        }
+    <meta charset="UTF-8">
+    <title>Contagem Regressiva para o Casamento</title>
+    <style>
+        body {
+            background: no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0 20px;
+            color: #fff7f0;
+            /* Oculta a barra de rolagem para uma experiência de tela cheia */
+            overflow: hidden;
+        }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            z-index: -1;
-        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
 
-        .romantic {
-            font-family: 'Georgia', serif;
-            font-size: 1.4rem;
-            font-style: italic;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        .romantic {
+            font-family: 'Georgia', serif;
+            font-size: 1.4rem;
+            font-style: italic;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
 
-        .countdown {
-            display: flex;
-            gap: 30px;
-            font-size: 2rem;
-            color: #4b3621;
-            background: rgba(255, 247, 240, 0.8);
-            padding: 20px 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
+        .countdown {
+            display: flex;
+            gap: 30px;
+            font-size: 2rem;
+            color: #4b3621;
+            background: rgba(255, 247, 240, 0.8);
+            padding: 20px 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
 
-        .time-box {
-            text-align: center;
-        }
+        .time-box {
+            text-align: center;
+        }
 
-        .time-box span {
-            display: block;
-            font-size: 3rem;
-            font-weight: bold;
-            color: #c59d5f;
-            min-width: 60px;
-        }
+        .time-box span {
+            display: block;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #c59d5f;
+            min-width: 60px;
+        }
 
-        .label {
-            font-size: 1rem;
-            color: #7a5c3e;
-        }
+        .label {
+            font-size: 1rem;
+            color: #7a5c3e;
+        }
 
-        .relationship-time {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-style: italic;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-    </style>
+        .relationship-time {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Estilo para a tela de sobreposição de clique */
+        #overlay-play {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Fundo preto semi-transparente */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer; /* Muda o cursor para indicar que é clicável */
+            z-index: 999; /* Garante que fique acima dos outros elementos */
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Classe para ocultar a sobreposição */
+        #overlay-play.hidden {
+            opacity: 0;
+            pointer-events: none; /* Desativa cliques quando invisível */
+        }
+    </style>
 </head>
 <body>
-    <h1>Contagem Regressiva para o Nosso Casamento 💍</h1>
-    <div class="romantic" id="daily-phrase">Em breve, uma só carne...</div>
+    <div id="overlay-play">
+        <span>Clique em qualquer lugar para começar</span>
+    </div>
 
-    <div class="countdown" id="countdown">
-        <div class="time-box">
-            <span id="days">--</span>
-            <div class="label">Dias</div>
-        </div>
-        <div class="time-box">
-            <span id="hours">--</span>
-            <div class="label">Horas</div>
-        </div>
-        <div class="time-box">
-            <span id="minutes">--</span>
-            <div class="label">Minutos</div>
-        </div>
-        <div class="time-box">
-            <span id="seconds">--</span>
-            <div class="label">Segundos</div>
-        </div>
-    </div>
-    
-    <div class="relationship-time" id="relationship-time"></div>
+    <h1>Contagem Regressiva para o Nosso Casamento 💍</h1>
+    <div class="romantic" id="daily-phrase">Em breve, uma só carne...</div>
 
-    <audio autoplay loop>
-        <source src="praia_do_rosa.mp3" type="audio/mpeg">
-        Seu navegador não suporta áudio HTML5.
-    </audio>
+    <div class="countdown" id="countdown">
+        <div class="time-box">
+            <span id="days">--</span>
+            <div class="label">Dias</div>
+        </div>
+        <div class="time-box">
+            <span id="hours">--</span>
+            <div class="label">Horas</div>
+        </div>
+        <div class="time-box">
+            <span id="minutes">--</span>
+            <div class="label">Minutos</div>
+        </div>
+        <div class="time-box">
+            <span id="seconds">--</span>
+            <div class="label">Segundos</div>
+        </div>
+    </div>
+    
+    <div class="relationship-time" id="relationship-time"></div>
 
-    <script type="module">
-        import { photos } from './photos.js';
-        // Importa a nova lista de frases do arquivo 'phrases.js'
-        import { phrases } from './phrases.js';
+        <audio id="background-music" loop>
+        <source src="praia_do_rosa.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio HTML5.
+    </audio>
 
-        const weddingDate = new Date("2025-12-13T00:00:00").getTime();
-        const relationshipStartDate = new Date("2024-04-13T00:00:00");
-        const photoDir = 'fotos/';
-        
-        // Novo elemento para o texto romântico
-        const dailyPhraseElement = document.getElementById("daily-phrase");
+    <script type="module">
+        import { photos } from './photos.js';
+        // Importa a nova lista de frases do arquivo 'phrases.js'
+        import { phrases } from './phrases.js';
 
-        // Função que define a foto de fundo do dia
-        const setDailyBackground = () => {
-            if (!photos || photos.length === 0) {
-                console.error("A lista de fotos não foi carregada. Verifique o arquivo 'photos.js'.");
-                return;
-            }
-            const now = new Date();
-            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const dayIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % photos.length;
-            const photo = photos[dayIndex];
-            document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
-        };
-        
-        // Nova função para mudar a frase
-        const setDailyPhrase = () => {
-            if (!phrases || phrases.length === 0) {
-                console.error("A lista de frases está vazia. Verifique o arquivo 'phrases.js'.");
-                return;
-            }
-            const now = new Date();
-            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            // A mesma lógica de cálculo é usada para selecionar a frase
-            const phraseIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % phrases.length;
-            const phrase = phrases[phraseIndex];
-            // Atualiza o texto da div romântica
-            dailyPhraseElement.innerText = phrase;
-        };
+        const weddingDate = new Date("2025-12-13T00:00:00").getTime();
+        const relationshipStartDate = new Date("2024-04-13T00:00:00");
+        const photoDir = 'fotos/';
+        
+        // Novo elemento para o texto romântico
+        const dailyPhraseElement = document.getElementById("daily-phrase");
+        
+        // Funções de controle de áudio e overlay
+        document.addEventListener("DOMContentLoaded", function() {
+            const audio = document.getElementById("background-music");
+            const overlay = document.getElementById("overlay-play");
 
-        const updateCountdown = () => {
-            const now = new Date().getTime();
-            const distance = weddingDate - now;
+            // Adiciona o evento de clique para a div de tela cheia
+            overlay.addEventListener("click", function() {
+                if (audio.paused) {
+                    audio.play().then(() => {
+                        // Adiciona a classe 'hidden' para ocultar a sobreposição
+                        overlay.classList.add('hidden');
+                    }).catch(error => {
+                        console.error("Erro ao tentar tocar o áudio:", error);
+                    });
+                }
+            });
+        });
 
-            if (distance < 0) {
-                document.getElementById("countdown").innerHTML = "<h2>É hoje o grande dia! 💒</h2>";
-                return;
-            }
+        // Função que define a foto de fundo do dia
+        const setDailyBackground = () => {
+            if (!photos || photos.length === 0) {
+                console.error("A lista de fotos não foi carregada. Verifique o arquivo 'photos.js'.");
+                return;
+            }
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const dayIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % photos.length;
+            const photo = photos[dayIndex];
+            document.body.style.backgroundImage = `url('${photoDir}${photo}')`;
+        };
+        
+        // Nova função para mudar a frase
+        const setDailyPhrase = () => {
+            if (!phrases || phrases.length === 0) {
+                console.error("A lista de frases está vazia. Verifique o arquivo 'phrases.js'.");
+                return;
+            }
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            // A mesma lógica de cálculo é usada para selecionar a frase
+            const phraseIndex = Math.floor((startOfDay - relationshipStartDate.getTime()) / (1000 * 60 * 60 * 24)) % phrases.length;
+            const phrase = phrases[phraseIndex];
+            // Atualiza o texto da div romântica
+            dailyPhraseElement.innerText = phrase;
+        };
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
 
-            document.getElementById("days").innerText = String(days).padStart(2, '0');
-            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
-            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
-        };
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "<h2>É hoje o grande dia! 💒</h2>";
+                return;
+            }
 
-        const updateRelationshipTime = () => {
-            const now = new Date();
-            let years = now.getFullYear() - relationshipStartDate.getFullYear();
-            let months = now.getMonth() - relationshipStartDate.getMonth();
-            let days = now.getDate() - relationshipStartDate.getDate();
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            if (days < 0) {
-                months--;
-                days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-            }
-            if (months < 0) {
-                years--;
-                months += 12;
-            }
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+        };
 
-            const parts = [];
-            if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
-            if (months > 0) parts.push(`${months} mes${months > 1 ? 'es' : ''}`);
-            if (days > 0 || (years === 0 && months === 0)) parts.push(`${days} dia${days > 1 ? 's' : ''}`);
+        const updateRelationshipTime = () => {
+            const now = new Date();
+            let years = now.getFullYear() - relationshipStartDate.getFullYear();
+            let months = now.getMonth() - relationshipStartDate.getMonth();
+            let days = now.getDate() - relationshipStartDate.getDate();
 
-            let timeString = 'Juntos há ';
-            if (parts.length > 1) {
-                const lastPart = parts.pop();
-                timeString += parts.join(', ') + ' e ' + lastPart + ' 💖';
-            } else if (parts.length === 1) {
-                timeString += parts[0] + ' 💖';
-            } else {
-                timeString += 'pouco tempo... 💖';
-            }
-            
-            document.getElementById("relationship-time").innerText = timeString;
-        };
+            if (days < 0) {
+                months--;
+                days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
 
-        // Chama as funções para carregar os valores iniciais
-        setDailyBackground();
-        setDailyPhrase(); // Nova chamada para a função de frases
-        updateCountdown();
-        updateRelationshipTime();
-        
-        setInterval(() => {
-            updateCountdown();
-            updateRelationshipTime();
-        }, 1000);
-    </script>
+            const parts = [];
+            if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
+            if (months > 0) parts.push(`${months} mes${months > 1 ? 'es' : ''}`);
+            if (days > 0 || (years === 0 && months === 0)) parts.push(`${days} dia${days > 1 ? 's' : ''}`);
+
+            let timeString = 'Juntos há ';
+            if (parts.length > 1) {
+                const lastPart = parts.pop();
+                timeString += parts.join(', ') + ' e ' + lastPart + ' 💖';
+            } else if (parts.length === 1) {
+                timeString += parts[0] + ' 💖';
+            } else {
+                timeString += 'pouco tempo... 💖';
+            }
+            
+            document.getElementById("relationship-time").innerText = timeString;
+        };
+
+        // Chama as funções para carregar os valores iniciais
+        setDailyBackground();
+        setDailyPhrase(); // Nova chamada para a função de frases
+        updateCountdown();
+        updateRelationshipTime();
+        
+        setInterval(() => {
+            updateCountdown();
+            updateRelationshipTime();
+        }, 1000);
+    </script>
 </body>
 </html>
