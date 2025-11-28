@@ -3,7 +3,6 @@
 // A ordem das fotos define a sequência em que elas serão exibidas, uma a cada dia.
 export const photos = [
 'IMG-20240814-WA0031.jpg',
-'IMG-20250611-WA0098.jpg',
 'IMG-20250714-WA0065.jpg',
 'IMG-20250711-WA0070.jpg',
 'IMG-20250218-WA0007.jpg',
